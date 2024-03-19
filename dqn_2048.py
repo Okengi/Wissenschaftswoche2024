@@ -4,6 +4,7 @@ import random
 from collections import deque
 from game2048 import Game2048
 
+
 # Hyperparameter
 LEARNING_RATE = 0.001
 GAMMA = 0.95
