@@ -4,13 +4,14 @@ from collections import deque
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import Adam
+import matplotlib.pyplot as plt
 
 from game2048 import Game2048
 
 GRID_SIZE = 4
-NUM_EPISODES = 50
+NUM_EPISODES = 100
 MEMORY_SIZE = 1000
-BATCH_SIZE = 32
+BATCH_SIZE = 128
 EPSILON_DECAY = 0.995
 MIN_EPSILON = 0.01
 GAMMA = 0.95
@@ -26,8 +27,8 @@ class DQNAgent:
     def build_model(self):
         model = Sequential()
         model.add(Dense(128, input_dim=self.state_size, activation='relu'))
-        model.add(Dense(64, activation='relu'))
-        model.add(Dense(32, activation='relu'))
+        model.add(Dense(64, activation='linear'))
+        model.add(Dense(16, activation='linear'))
         model.add(Dense(self.action_size, activation='linear'))
         model.compile(loss='mse', optimizer=Adam())
         return model
@@ -61,6 +62,16 @@ def train():
     state_size = GRID_SIZE * GRID_SIZE
     action_size = 4
     agent = DQNAgent(state_size, action_size)
+
+    rewards = []  # List to store total rewards per episode
+    scores = []
+
+    fig, ax = plt.subplots()
+    ax.set_xlabel('Episode')
+    ax.set_ylabel('Total Reward')
+    ax.set_title('Training Progress')
+    line, = ax.plot([], [], lw=2)
+    linee, = ax.plot([], [], lw=4)
     
     for episode in range(NUM_EPISODES):
         game = Game2048(GRID_SIZE)
@@ -80,12 +91,19 @@ def train():
             agent.remember(state, action, reward, next_state, done)
             state = next_state
             
+        rewards.append(reward)
+        scores.append(game.score)
+        line.set_data(range(episode + 1), rewards)
+        linee.set_data(range(episode + 1), scores)
+        ax.relim()
+        ax.autoscale_view()
 
         print(f"Episode: {episode + 1}/{NUM_EPISODES}, Total Reward: {total_reward}")
         if (episode + 1) % BATCH_SIZE == 0:
             agent.replay(BATCH_SIZE)
 
     agent.model.save('2048_ai_model.keras')
+    plt.show()
     
 
 if __name__ == "__main__":

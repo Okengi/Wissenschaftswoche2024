@@ -8,6 +8,7 @@ class Game2048:
     GAME_OVER: bool = False
     tile_before_move = 0
     highest_score = 2
+    score_before_move = 0
 
     def __init__(self, grid_size: int):
         self.GRID_SIZE = grid_size
@@ -25,7 +26,10 @@ class Game2048:
     def move(self, direction):
         self.GAME_OVER = self.is_game_over()
         original_grid = np.copy(self.grid)
+        self.score = np.sum(self.grid)
+        
         self.tile_before_move = np.count_nonzero(self.grid)
+        self.score_before_move = self.score
 
         if direction == 0:  # Up
             self.grid = np.transpose(self.grid)
@@ -50,7 +54,6 @@ class Game2048:
             if new_row[i] == new_row[i + 1]:
                 new_row[i] *= 2
                 new_row[i + 1] = 0
-                self.score += new_row[i]
                 if new_row[i] > self.highest_score:
                     self.highest_score = new_row[i]
         new_row = [i for i in new_row if i != 0]
@@ -87,12 +90,11 @@ class Game2048:
             reward += 2  # Reward for reaching a total score of 100
         elif self.score >= 50:
             reward += 1  # Reward for reaching a total score of 50
+        
+        if self.score == self.score_before_move:
+            reward -= 10
 
-        # Punish for not moving (no tiles merged)
-        if self.tile_before_move == np.count_nonzero(self.grid):
-            reward -= 20  # Penalty for not merging tiles
-
-        return reward
+        return self.score
 
     def is_game_over(self):
         # Check if any empty cells are available
