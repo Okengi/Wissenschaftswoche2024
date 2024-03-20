@@ -70,14 +70,14 @@ def main():
         action = model.predict(game_board_flat)
         action = np.argmax(action)
         print(action)
-        reward += game.calculate_reward()
+        reward = game.calculate_reward()
         print("Reward: "+str(reward))
         state_tuple=game.move(action)
 
         draw_grid(screen)
         draw_tiles(screen, game)
         pygame.display.flip()
-        time.sleep(0.1)
+        time.sleep(1)
 
     pygame.quit()
 

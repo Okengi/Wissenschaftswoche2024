@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import *
+
 from game2048 import Game2048
 
 game = Game2048(4)
@@ -8,7 +9,6 @@ GRID_SIZE = game.GRID_SIZE
 CELL_SIZE = 100
 GRID_OFFSET = 50
 
-# Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (128, 128, 128)
@@ -20,11 +20,13 @@ TILE_COLORS = {
     32: (255, 255, 128),
     64: (0, 128, 0),
     128: (0, 255, 0),
-    256: (128, 255, 0)
-    # Define colors for other tile values as needed
+    256: (128, 255, 0),
+    512: (128, 124, 255),
+    1024: (0, 0, 255),
+    2048: (255, 0, 255)
 }
 
-def draw_grid(screen):
+def draw_grid(screen: pygame.display):
     screen.fill(WHITE)
     for i in range(GRID_SIZE + 1):
         pygame.draw.line(screen, GRAY, (GRID_OFFSET + i * CELL_SIZE, GRID_OFFSET),
@@ -43,6 +45,9 @@ def draw_tiles(screen, game):
                 text = font.render(str(value), True, BLACK)
                 text_rect = text.get_rect(center=(GRID_OFFSET + j * CELL_SIZE + CELL_SIZE // 2, GRID_OFFSET + i * CELL_SIZE + CELL_SIZE // 2))
                 screen.blit(text, text_rect)
+            # else:
+                # color = (128 / GRID_SIZE * (j + 1), 255 / GRID_SIZE * (i + 1), 128 / (GRID_SIZE * GRID_SIZE) * (i + 1) * (j + 1))
+                # pygame.draw.rect(screen, color, (GRID_OFFSET + j * CELL_SIZE, GRID_OFFSET + i * CELL_SIZE, CELL_SIZE, CELL_SIZE))
 
 def main():
     pygame.init()

@@ -64,36 +64,6 @@ class Game2048:
         return self.grid.flatten(), self.calculate_reward(), self.is_game_over()
     
     def calculate_reward(self):
-        # Initialize reward
-        reward = 0
-
-        # Check if the maximum tile value increased after the move
-        if self.get_max_tile() > self.tile_before_move:
-            reward += 5  # Positive reward for merging tiles
-
-        # Penalize for game over
-        if self.is_game_over():
-            reward -= 100  # Negative reward for game over
-
-        # Milestones for achieving certain high scores
-        if self.highest_score == 16:
-            reward += 1  # Reward for reaching a high score of 16
-        elif self.highest_score == 64:
-            reward += 5  # Reward for reaching a high score of 64
-        elif self.highest_score == 256:
-            reward += 20  # Reward for reaching a high score of 256
-
-        # Milestones for achieving certain total scores
-        if self.score >= 200:
-            reward += 5  # Reward for reaching a total score of 200
-        elif self.score >= 100:
-            reward += 2  # Reward for reaching a total score of 100
-        elif self.score >= 50:
-            reward += 1  # Reward for reaching a total score of 50
-        
-        if self.score == self.score_before_move:
-            reward -= 10
-
         return self.score
 
     def is_game_over(self):

@@ -8,13 +8,13 @@ import matplotlib.pyplot as plt
 
 from game2048 import Game2048
 
-GRID_SIZE = 4
-NUM_EPISODES = 100
-MEMORY_SIZE = 1000
-BATCH_SIZE = 128
-EPSILON_DECAY = 0.995
-MIN_EPSILON = 0.01
-GAMMA = 0.95
+GRID_SIZE = 4 # 2048 Spiel Größe
+NUM_EPISODES = 1 # In reinforcement learning, each of the repeated attempts by the agent to learn an environment.
+MEMORY_SIZE = 1000 #
+BATCH_SIZE = 128 # 
+EPSILON_DECAY = 0.995 #
+MIN_EPSILON = 0.01 #
+GAMMA = 0.95 #
 
 class DQNAgent:
     def __init__(self, state_size, action_size):
@@ -57,48 +57,56 @@ class DQNAgent:
         if self.epsilon > MIN_EPSILON:
             self.epsilon *= EPSILON_DECAY
 
-# Main function for training the AI agent
+
 def train():
     state_size = GRID_SIZE * GRID_SIZE
     action_size = 4
     agent = DQNAgent(state_size, action_size)
 
-    rewards = []  # List to store total rewards per episode
     scores = []
-
     fig, ax = plt.subplots()
     ax.set_xlabel('Episode')
     ax.set_ylabel('Total Reward')
     ax.set_title('Training Progress')
-    line, = ax.plot([], [], lw=2)
     linee, = ax.plot([], [], lw=4)
     
     for episode in range(NUM_EPISODES):
         game = Game2048(GRID_SIZE)
         state_tuple = game.get_state()
-        game_board_flat = state_tuple[0]
-        total_reward = state_tuple[1]
-        done = state_tuple[2]
-        
-        game_board_flat = game_board_flat.reshape(1, GRID_SIZE*GRID_SIZE)
-        state = game_board_flat
 
-        while not done:
+        game_board = state_tuple[0].flatten()
+        print(game_board)
+        
+        is_game_over = state_tuple[2]
+        
+        game_board = game_board.reshape(1, GRID_SIZE * GRID_SIZE)
+        state = game_board
+
+
+        while not is_game_over:
             action = agent.act(state)
-            next_state, reward, done = game.move(action)
-            total_reward += reward
-            next_state = next_state.reshape(1, state_size)
-            agent.remember(state, action, reward, next_state, done)
-            state = next_state
+            next_state, reward, is_game_over = game.move(action)
             
-        rewards.append(reward)
+            next_state = next_state.reshape(1, state_size)
+            agent.remember(state, action, reward, next_state, is_game_over)
+            state = next_state
+
         scores.append(game.score)
-        line.set_data(range(episode + 1), rewards)
-        linee.set_data(range(episode + 1), scores)
+        linee.set_data(range(len(scores)), scores)
         ax.relim()
         ax.autoscale_view()
+        plt.pause(0.01)
 
-        print(f"Episode: {episode + 1}/{NUM_EPISODES}, Total Reward: {total_reward}")
+        print(f"Episode: {episode + 1}/{NUM_EPISODES}, Total Reward: ")
+
+        # while loop: grid == alt grid
+        #     move(counter)
+        #     counter++
+                
+                
+        # when counter == 4 
+        #     done == true
+
         if (episode + 1) % BATCH_SIZE == 0:
             agent.replay(BATCH_SIZE)
 
