@@ -61,7 +61,7 @@ def train():
     
     for episode in range(NUM_EPISODES):
         game = Game2048()
-        visuals = Visuals(game)
+        # visuals = Visuals(game)
         state_tuple = game.get_state()
 
         game_board = state_tuple[0].flatten()
@@ -75,15 +75,14 @@ def train():
         while not is_game_over:
             action = agent.act(state)
             next_state, reward, is_game_over = game.move(action)
-            visuals.move()
+            # visuals.move()
             
             next_state = next_state.reshape(1, state_size)
             agent.remember(state, action, reward, next_state, is_game_over)
             state = next_state
 
-        graph.add_reward(reward, episode + 1)
-
         print(f"Episode: {episode + 1}/{NUM_EPISODES}, Total Reward: {reward}")
+        graph.add_reward(reward, episode + 1)
 
         if (episode + 1) % BATCH_SIZE == 0:
             agent.replay(BATCH_SIZE)

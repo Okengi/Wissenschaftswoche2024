@@ -17,6 +17,7 @@ class Visuals:
         pygame.display.flip()
         if self.game.is_game_over() == True:
             pygame.quit()
+            return
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
