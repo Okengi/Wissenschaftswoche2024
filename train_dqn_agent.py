@@ -7,14 +7,8 @@ from keras.optimizers import Adam
 import matplotlib.pyplot as plt
 
 from game2048 import Game2048
+from CONSTANTS import GRID_SIZE, NUM_EPISODES, MEMORY_SIZE, BATCH_SIZE, EPSILON_DECAY, MIN_EPSILON, GAMMA, MODEL_SAVE_LOCATION
 
-GRID_SIZE = 4 # 2048 Spiel Größe
-NUM_EPISODES = 1 # In reinforcement learning, each of the repeated attempts by the agent to learn an environment.
-MEMORY_SIZE = 1000 #
-BATCH_SIZE = 128 # 
-EPSILON_DECAY = 0.995 #
-MIN_EPSILON = 0.01 #
-GAMMA = 0.95 #
 
 class DQNAgent:
     def __init__(self, state_size, action_size):
@@ -71,7 +65,7 @@ def train():
     linee, = ax.plot([], [], lw=4)
     
     for episode in range(NUM_EPISODES):
-        game = Game2048(GRID_SIZE)
+        game = Game2048()
         state_tuple = game.get_state()
 
         game_board = state_tuple[0].flatten()
@@ -99,18 +93,11 @@ def train():
 
         print(f"Episode: {episode + 1}/{NUM_EPISODES}, Total Reward: ")
 
-        # while loop: grid == alt grid
-        #     move(counter)
-        #     counter++
-                
-                
-        # when counter == 4 
-        #     done == true
 
         if (episode + 1) % BATCH_SIZE == 0:
             agent.replay(BATCH_SIZE)
 
-    agent.model.save('2048_ai_model.keras')
+    agent.model.save(MODEL_SAVE_LOCATION)
     plt.show()
     
 

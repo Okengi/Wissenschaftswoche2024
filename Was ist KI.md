@@ -2,7 +2,7 @@
 
 ---
 
-![AI Onion](AI Onion Diagram.jpg)
+![AI Onion](AIOnionDiagram.jpg)
 
 ---
 

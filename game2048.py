@@ -1,24 +1,23 @@
 import numpy as np
 import random
 
+from CONSTANTS import GRID_SIZE
 
 
 class Game2048:
-    GRID_SIZE: int = 4
     GAME_OVER: bool = False
     tile_before_move = 0
     highest_score = 2
     score_before_move = 0
 
-    def __init__(self, grid_size: int):
-        self.GRID_SIZE = grid_size
-        self.grid = np.zeros((self.GRID_SIZE, self.GRID_SIZE))
+    def __init__(self):
+        self.grid = np.zeros((GRID_SIZE, GRID_SIZE))
         self.score = 0
         self.add_new_tile()
         self.add_new_tile()
 
     def add_new_tile(self):
-        empty_cells = [(i, j) for i in range(self.GRID_SIZE) for j in range(self.GRID_SIZE) if self.grid[i][j] == 0]
+        empty_cells = [(i, j) for i in range(GRID_SIZE) for j in range(GRID_SIZE) if self.grid[i][j] == 0]
         if empty_cells:
             i, j = random.choice(empty_cells)
             self.grid[i][j] = 2 if random.random() < 0.9 else 4
@@ -57,7 +56,7 @@ class Game2048:
                 if new_row[i] > self.highest_score:
                     self.highest_score = new_row[i]
         new_row = [i for i in new_row if i != 0]
-        new_row += [0] * (self.GRID_SIZE - len(new_row))
+        new_row += [0] * (GRID_SIZE - len(new_row))
         return new_row
 
     def get_state(self):
@@ -68,16 +67,16 @@ class Game2048:
 
     def is_game_over(self):
         # Check if any empty cells are available
-        for i in range(self.GRID_SIZE):
-            for j in range(self.GRID_SIZE):
+        for i in range(GRID_SIZE):
+            for j in range(GRID_SIZE):
                 if self.grid[i][j] == 0:
                     return False
         
         # Check if any adjacent tiles have the same value
-        for i in range(self.GRID_SIZE):
-            for j in range(self.GRID_SIZE):
-                if (i < self.GRID_SIZE - 1 and self.grid[i][j] == self.grid[i + 1][j]) or \
-                (j < self.GRID_SIZE - 1 and self.grid[i][j] == self.grid[i][j + 1]):
+        for i in range(GRID_SIZE):
+            for j in range(GRID_SIZE):
+                if (i < GRID_SIZE - 1 and self.grid[i][j] == self.grid[i + 1][j]) or \
+                (j < GRID_SIZE - 1 and self.grid[i][j] == self.grid[i][j + 1]):
                     return False
         return True
 

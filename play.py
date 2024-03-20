@@ -2,31 +2,12 @@ import pygame
 from pygame.locals import *
 import numpy as np
 import time
-from game2048 import Game2048
-
 from keras.models import load_model
 
-game = Game2048(4)
+from game2048 import Game2048
+from CONSTANTS import GRID_SIZE, CELL_SIZE, GRID_OFFSET, WHITE, BLACK, GRAY, TILE_COLORS, MODEL_SAVE_LOCATION
 
-GRID_SIZE = game.GRID_SIZE
-CELL_SIZE = 100
-GRID_OFFSET = 50
-
-# Colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-GRAY = (128, 128, 128)
-TILE_COLORS = {
-    2: (255, 255, 128),
-    4: (255, 255, 0),
-    8: (255, 128, 128),
-    16: (255, 255, 0),
-    32: (255, 255, 128),
-    64: (0, 128, 0),
-    128: (0, 255, 0),
-    256: (128, 255, 0),
-    512: (128, 255, 255)
-}
+game = Game2048()
 
 def draw_grid(screen):
     screen.fill(WHITE)
@@ -53,7 +34,7 @@ def main():
     screen = pygame.display.set_mode((GRID_SIZE * CELL_SIZE + 2 * GRID_OFFSET, GRID_SIZE * CELL_SIZE + 2 * GRID_OFFSET))
     pygame.display.set_caption("2048 Game")
     
-    model = load_model('2048_ai_model.keras')
+    model = load_model(MODEL_SAVE_LOCATION)
 
     running = True
     state_tuple = game.get_state()

@@ -2,29 +2,9 @@ import pygame
 from pygame.locals import *
 
 from game2048 import Game2048
+from CONSTANTS import GRID_SIZE, CELL_SIZE, GRID_OFFSET, WHITE, BLACK, GRAY, TILE_COLORS
 
-game = Game2048(4)
-
-GRID_SIZE = game.GRID_SIZE
-CELL_SIZE = 100
-GRID_OFFSET = 50
-
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-GRAY = (128, 128, 128)
-TILE_COLORS = {
-    2: (255, 255, 128),
-    4: (255, 255, 0),
-    8: (255, 128, 0),
-    16: (255, 255, 0),
-    32: (255, 255, 128),
-    64: (0, 128, 0),
-    128: (0, 255, 0),
-    256: (128, 255, 0),
-    512: (128, 124, 255),
-    1024: (0, 0, 255),
-    2048: (255, 0, 255)
-}
+game = Game2048()
 
 def draw_grid(screen: pygame.display):
     screen.fill(WHITE)
