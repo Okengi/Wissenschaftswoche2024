@@ -2,7 +2,7 @@
 
 ---
 
-![AI Onion](AIOnionDiagram.jpg)
+![AI Onion](Bilder\AIOnionDiagram.jpg)
 
 ---
 
@@ -34,7 +34,7 @@
 
 # Neural Networks
 Diese Programmierte Struktur ist aus was KI entstehet
-![Deep Neural Network](DeepNeuralNetwork.png)
+![Deep Neural Network](Bilder\DeepNeuralNetwork.png)
 
 ---
 
