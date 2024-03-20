@@ -7,6 +7,8 @@ from keras.optimizers import Adam
 import matplotlib.pyplot as plt
 
 from game2048 import Game2048
+from learning_graph import Graph
+from visuals import Visuals
 from CONSTANTS import GRID_SIZE, NUM_EPISODES, MEMORY_SIZE, BATCH_SIZE, EPSILON_DECAY, MIN_EPSILON, GAMMA, MODEL_SAVE_LOCATION
 
 
@@ -50,26 +52,19 @@ class DQNAgent:
             self.model.fit(state, target_f, epochs=1, verbose=0)
         if self.epsilon > MIN_EPSILON:
             self.epsilon *= EPSILON_DECAY
-
-
+        
 def train():
     state_size = GRID_SIZE * GRID_SIZE
     action_size = 4
     agent = DQNAgent(state_size, action_size)
-
-    scores = []
-    fig, ax = plt.subplots()
-    ax.set_xlabel('Episode')
-    ax.set_ylabel('Total Reward')
-    ax.set_title('Training Progress')
-    linee, = ax.plot([], [], lw=4)
+    graph = Graph()
     
     for episode in range(NUM_EPISODES):
         game = Game2048()
+        visuals = Visuals(game)
         state_tuple = game.get_state()
 
         game_board = state_tuple[0].flatten()
-        print(game_board)
         
         is_game_over = state_tuple[2]
         
@@ -80,25 +75,20 @@ def train():
         while not is_game_over:
             action = agent.act(state)
             next_state, reward, is_game_over = game.move(action)
+            visuals.move()
             
             next_state = next_state.reshape(1, state_size)
             agent.remember(state, action, reward, next_state, is_game_over)
             state = next_state
 
-        scores.append(game.score)
-        linee.set_data(range(len(scores)), scores)
-        ax.relim()
-        ax.autoscale_view()
-        plt.pause(0.01)
+        graph.add_reward(reward, episode + 1)
 
-        print(f"Episode: {episode + 1}/{NUM_EPISODES}, Total Reward: ")
-
+        print(f"Episode: {episode + 1}/{NUM_EPISODES}, Total Reward: {reward}")
 
         if (episode + 1) % BATCH_SIZE == 0:
             agent.replay(BATCH_SIZE)
 
     agent.model.save(MODEL_SAVE_LOCATION)
-    plt.show()
     
 
 if __name__ == "__main__":

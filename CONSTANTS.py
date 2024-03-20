@@ -6,7 +6,7 @@ MODEL_SAVE_LOCATION = f'models/2048_ai_model_{str(VERSION)}.keras'
 GRID_SIZE = 4
 
 # AI
-NUM_EPISODES = 1 # In reinforcement learning, each of the repeated attempts by the agent to learn an environment.
+NUM_EPISODES = 10 # In reinforcement learning, each of the repeated attempts by the agent to learn an environment.
 MEMORY_SIZE = 1000 #
 BATCH_SIZE = 128 # 
 EPSILON_DECAY = 0.995 #

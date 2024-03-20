@@ -1,66 +1,30 @@
-import pygame
-from pygame.locals import *
 import numpy as np
 import time
 from keras.models import load_model
 
 from game2048 import Game2048
-from CONSTANTS import GRID_SIZE, CELL_SIZE, GRID_OFFSET, WHITE, BLACK, GRAY, TILE_COLORS, MODEL_SAVE_LOCATION
-
-game = Game2048()
-
-def draw_grid(screen):
-    screen.fill(WHITE)
-    for i in range(GRID_SIZE + 1):
-        pygame.draw.line(screen, GRAY, (GRID_OFFSET + i * CELL_SIZE, GRID_OFFSET),
-                         (GRID_OFFSET + i * CELL_SIZE, GRID_OFFSET + GRID_SIZE * CELL_SIZE))
-        pygame.draw.line(screen, GRAY, (GRID_OFFSET, GRID_OFFSET + i * CELL_SIZE),
-                         (GRID_OFFSET + GRID_SIZE * CELL_SIZE, GRID_OFFSET + i * CELL_SIZE))
-
-def draw_tiles(screen, game):
-    for i in range(GRID_SIZE):
-        for j in range(GRID_SIZE):
-            value = int(game.grid[i][j])
-            if value != 0:
-                color = TILE_COLORS.get(value, BLACK)
-                pygame.draw.rect(screen, color, (GRID_OFFSET + j * CELL_SIZE, GRID_OFFSET + i * CELL_SIZE, CELL_SIZE, CELL_SIZE))
-                font = pygame.font.Font(None, 36)
-                text = font.render(str(value), True, BLACK)
-                text_rect = text.get_rect(center=(GRID_OFFSET + j * CELL_SIZE + CELL_SIZE // 2, GRID_OFFSET + i * CELL_SIZE + CELL_SIZE // 2))
-                screen.blit(text, text_rect)
+from visuals import Visuals
+from CONSTANTS import GRID_SIZE, MODEL_SAVE_LOCATION
 
 def main():
-    pygame.init()
-    screen = pygame.display.set_mode((GRID_SIZE * CELL_SIZE + 2 * GRID_OFFSET, GRID_SIZE * CELL_SIZE + 2 * GRID_OFFSET))
-    pygame.display.set_caption("2048 Game")
-    
     model = load_model(MODEL_SAVE_LOCATION)
+    game = Game2048()
+    visuals = Visuals(game)
 
-    running = True
     state_tuple = game.get_state()
-    reward = 0
-    while running:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                running = False
-
-        
+    is_game_over = False
+    while not is_game_over:
         game_board_flat = state_tuple[0]
         game_board_flat = game_board_flat.reshape(1, GRID_SIZE*GRID_SIZE)
+        is_game_over = state_tuple[2]
 
         action = model.predict(game_board_flat)
+
         action = np.argmax(action)
-        print(action)
-        reward = game.calculate_reward()
-        print("Reward: "+str(reward))
-        state_tuple=game.move(action)
 
-        draw_grid(screen)
-        draw_tiles(screen, game)
-        pygame.display.flip()
-        time.sleep(1)
-
-    pygame.quit()
+        state_tuple = game.move(action)
+        visuals.move()
+        time.sleep(0.5)
 
 if __name__ == '__main__':
     main()
