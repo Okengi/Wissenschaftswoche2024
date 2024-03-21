@@ -10,6 +10,9 @@ class Game2048:
     highest_score = 2
     score_before_move = 0
 
+    same = False
+    same_counter = 1
+
     def __init__(self):
         self.grid = np.zeros((GRID_SIZE, GRID_SIZE))
         self.score = 0
@@ -20,7 +23,7 @@ class Game2048:
         empty_cells = [(i, j) for i in range(GRID_SIZE) for j in range(GRID_SIZE) if self.grid[i][j] == 0]
         if empty_cells:
             i, j = random.choice(empty_cells)
-            self.grid[i][j] = 2 if random.random() < 0.9 else 4
+            self.grid[i][j] = 2 if random.random() < 0.75 else 4
 
     def move(self, direction):
         self.GAME_OVER = self.is_game_over()
@@ -44,6 +47,12 @@ class Game2048:
             self.grid = np.array([self.merge(row[::-1])[::-1] for row in self.grid])
         if not np.array_equal(original_grid, self.grid):
             self.add_new_tile()
+            self.same = False
+            self.same_counter = 1
+        else:
+            self.same = True
+            self.same_counter += 1
+        
         
         return self.get_state()
 
@@ -60,10 +69,13 @@ class Game2048:
         return new_row
 
     def get_state(self):
-        return self.grid.flatten(), self.calculate_reward(), self.is_game_over()
+        return self.grid.reshape(1, GRID_SIZE * GRID_SIZE), self.calculate_reward(), self.is_game_over()
     
     def calculate_reward(self):
-        return self.score
+        reward = self.score
+        if self.same == True:
+            reward -= 256 * self.same_counter
+        return reward
 
     def is_game_over(self):
         # Check if any empty cells are available

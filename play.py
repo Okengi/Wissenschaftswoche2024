@@ -4,27 +4,31 @@ from keras.models import load_model
 
 from game2048 import Game2048
 from visuals import Visuals
-from CONSTANTS import GRID_SIZE, MODEL_SAVE_LOCATION
+from CONSTANTS import MODEL_SAVE_LOCATION
 
 def main():
     model = load_model(MODEL_SAVE_LOCATION)
     game = Game2048()
-    visuals = Visuals(game)
+    visuals = Visuals(game, False)
 
-    state_tuple = game.get_state()
-    is_game_over = False
+    game_board, reward, is_game_over = game.get_state()
+    
     while not is_game_over:
-        game_board_flat = state_tuple[0]
-        game_board_flat = game_board_flat.reshape(1, GRID_SIZE*GRID_SIZE)
-        is_game_over = state_tuple[2]
+        actions = model.predict(game_board)
 
-        action = model.predict(game_board_flat)
+        counter = 0
+        old = game_board
+        while np.array_equal(game_board, old):
+            if counter >= 4:
+                is_game_over = True
+                break
 
-        action = np.argmax(action)
-
-        state_tuple = game.move(action)
+            action_indexes = np.argsort(actions)[::-1]
+            game_board, reward, is_game_over = game.move(action_indexes[0][counter])
+            counter += 1
+            
         visuals.move()
-        time.sleep(0.5)
+        time.sleep(0.1)
 
 if __name__ == '__main__':
     main()

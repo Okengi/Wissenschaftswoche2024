@@ -5,17 +5,18 @@ from game2048 import Game2048
 from CONSTANTS import GRID_SIZE, CELL_SIZE, GRID_OFFSET, WHITE, BLACK, GRAY, TILE_COLORS
 
 class Visuals:
-    def __init__(self, game: Game2048) -> None:
+    def __init__(self, game: Game2048, training: bool) -> None:
         pygame.init()
         self.screen = pygame.display.set_mode((GRID_SIZE * CELL_SIZE + 2 * GRID_OFFSET, GRID_SIZE * CELL_SIZE + 2 * GRID_OFFSET))
         pygame.display.set_caption("2048 Game")
         self.game = game
+        self.training = training
     
     def move(self):
         self.draw_grid()
         self.draw_tiles()
         pygame.display.flip()
-        if self.game.is_game_over() == True:
+        if self.game.is_game_over() and self.training:
             pygame.quit()
             return
         for event in pygame.event.get():

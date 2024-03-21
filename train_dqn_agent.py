@@ -1,10 +1,11 @@
 import numpy as np
 import random
 from collections import deque
+import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import Adam
-import matplotlib.pyplot as plt
+import time
 
 from game2048 import Game2048
 from learning_graph import Graph
@@ -22,24 +23,29 @@ class DQNAgent:
 
     def build_model(self):
         model = Sequential()
-        model.add(Dense(128, input_dim=self.state_size, activation='relu'))
-        model.add(Dense(64, activation='linear'))
-        model.add(Dense(16, activation='linear'))
+        model.add(Dense(GRID_SIZE * GRID_SIZE, activation='relu'))
+        model.add(Dense(128, activation='relu'))
+        model.add(Dense(64, activation='relu'))
         model.add(Dense(self.action_size, activation='linear'))
-        model.compile(loss='mse', optimizer=Adam())
+        model.compile(loss='mse', optimizer=Adam(learning_rate=MIN_EPSILON))
+        
         return model
 
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
 
     def act(self, state):
-        if np.random.rand() <= self.epsilon:
-            return random.randrange(self.action_size)
+        x = np.random.rand()
+        if x <= self.epsilon:
+            arr = np.random.choice(self.action_size, size=self.action_size, replace=False)
+
+            return [arr,], True
         act_values = self.model.predict(state)
-        return np.argmax(act_values[0])
+        return act_values, False
+        #return np.argmax(act_values[0]), False
 
     def replay(self, batch_size):
-        if len(self.memory) < batch_size:
+        if len(self.memory) < batch_size: # when es nicht genug sampels gibt in der memory wird die function nicht ausgeführt
             return
 
         minibatch = random.sample(self.memory, batch_size)
@@ -57,32 +63,48 @@ def train():
     state_size = GRID_SIZE * GRID_SIZE
     action_size = 4
     agent = DQNAgent(state_size, action_size)
-    graph = Graph()
+    #graph = Graph()
     
     for episode in range(NUM_EPISODES):
         game = Game2048()
-        # visuals = Visuals(game)
-        state_tuple = game.get_state()
-
-        game_board = state_tuple[0].flatten()
+        # visuals = Visuals(game, True)
+        game_board, reward, is_game_over = game.get_state()
+        #print(f"game_board: {game_board}\nreward: {reward}\nis_game_over: {is_game_over}")
+        random_counter = 0
+        desicion_counter = 0
         
-        is_game_over = state_tuple[2]
-        
-        game_board = game_board.reshape(1, GRID_SIZE * GRID_SIZE)
-        state = game_board
-
-
         while not is_game_over:
-            action = agent.act(state)
-            next_state, reward, is_game_over = game.move(action)
+            
+            old_state = game_board
+            actions, desicion_was_random = agent.act(game_board)
+            if desicion_was_random:
+                random_counter += 1
+            else:
+                desicion_counter += 1
+            
+            counter = 0
+            old = game_board
+            action = 0
+            while np.array_equal(game_board, old):
+                if counter >= 4:
+                    is_game_over = True
+                    break
+
+                action_indexes = np.argsort(actions)[::-1]
+                game_board, reward, is_game_over = game.move(action_indexes[0][counter])
+                action = action_indexes[0][counter]
+                counter += 1
+                
+            # game_board, reward, is_game_over = game.move(action)
             # visuals.move()
             
-            next_state = next_state.reshape(1, state_size)
-            agent.remember(state, action, reward, next_state, is_game_over)
-            state = next_state
+            agent.remember(old_state, action, reward, game_board, is_game_over)
 
-        print(f"Episode: {episode + 1}/{NUM_EPISODES}, Total Reward: {reward}")
-        graph.add_reward(reward, episode + 1)
+
+        print(f"Episode: {episode + 1}/{NUM_EPISODES}, Reward: {reward}")
+        #graph.add_reward(reward, episode + 1)
+        #graph.add_random(random_counter, episode + 1)
+        #graph.add_desicion(desicion_counter, episode + 1)
 
         if (episode + 1) % BATCH_SIZE == 0:
             agent.replay(BATCH_SIZE)
