@@ -52,6 +52,7 @@ class Game2048:
         else:
             self.same = True
             self.same_counter += 1
+            print(self.same_counter)
         
         
         return self.get_state()

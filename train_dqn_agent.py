@@ -1,7 +1,6 @@
 import numpy as np
 import random
 from collections import deque
-import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import Adam
@@ -11,7 +10,6 @@ from game2048 import Game2048
 from learning_graph import Graph
 from visuals import Visuals
 from CONSTANTS import GRID_SIZE, NUM_EPISODES, MEMORY_SIZE, BATCH_SIZE, EPSILON_DECAY, MIN_EPSILON, GAMMA, MODEL_SAVE_LOCATION
-
 
 class DQNAgent:
     def __init__(self, state_size, action_size):
@@ -63,11 +61,11 @@ def train():
     state_size = GRID_SIZE * GRID_SIZE
     action_size = 4
     agent = DQNAgent(state_size, action_size)
-    #graph = Graph()
+    graph = Graph()
     
     for episode in range(NUM_EPISODES):
         game = Game2048()
-        # visuals = Visuals(game, True)
+        #visuals = Visuals(game, True)
         game_board, reward, is_game_over = game.get_state()
         #print(f"game_board: {game_board}\nreward: {reward}\nis_game_over: {is_game_over}")
         random_counter = 0
@@ -102,9 +100,9 @@ def train():
 
 
         print(f"Episode: {episode + 1}/{NUM_EPISODES}, Reward: {reward}")
-        #graph.add_reward(reward, episode + 1)
-        #graph.add_random(random_counter, episode + 1)
-        #graph.add_desicion(desicion_counter, episode + 1)
+        graph.add_reward(reward, episode + 1)
+        graph.add_random(random_counter, episode + 1)
+        graph.add_desicion(desicion_counter, episode + 1)
 
         if (episode + 1) % BATCH_SIZE == 0:
             agent.replay(BATCH_SIZE)
