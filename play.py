@@ -28,7 +28,7 @@ def main():
             counter += 1
             
         visuals.move()
-        time.sleep(0.1)
+        time.sleep(0.5)
     visuals.stay()
 
 if __name__ == '__main__':
