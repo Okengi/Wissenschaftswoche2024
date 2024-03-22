@@ -29,6 +29,7 @@ def main():
             
         visuals.move()
         time.sleep(0.1)
+    visuals.stay()
 
 if __name__ == '__main__':
     main()

@@ -17,7 +17,7 @@ class Graph:
         self.reward_line.set_data(range(len(self.rewards)), self.rewards)
         self.ax[0].relim()
         self.ax[0].autoscale_view()
-        plt.pause(0.01)
+        plt.pause(0.005)
         if episode >= NUM_EPISODES:
             plt.show()
 
@@ -26,7 +26,7 @@ class Graph:
         self.random_line.set_data(range(len(self.randoms)), self.randoms)
         self.ax[1].relim()
         self.ax[1].autoscale_view()
-        plt.pause(0.01)
+        plt.pause(0.005)
         if episode >= NUM_EPISODES:
             plt.show()
 
@@ -35,6 +35,6 @@ class Graph:
         self.desicion_line.set_data(range(len(self.desicions)), self.desicions)
         self.ax[1].relim()
         self.ax[1].autoscale_view()
-        plt.pause(0.01)
+        plt.pause(0.005)
         if episode >= NUM_EPISODES:
             plt.show()

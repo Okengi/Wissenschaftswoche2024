@@ -9,9 +9,7 @@ class Game2048:
     tile_before_move = 0
     highest_score = 2
     score_before_move = 0
-
-    same = False
-    same_counter = 1
+    reward = 0
 
     def __init__(self):
         self.grid = np.zeros((GRID_SIZE, GRID_SIZE))
@@ -45,15 +43,9 @@ class Game2048:
             self.grid = np.array([self.merge(row) for row in self.grid])
         elif direction == 3:  # Right
             self.grid = np.array([self.merge(row[::-1])[::-1] for row in self.grid])
+
         if not np.array_equal(original_grid, self.grid):
             self.add_new_tile()
-            self.same = False
-            self.same_counter = 1
-        else:
-            self.same = True
-            self.same_counter += 1
-            print(self.same_counter)
-        
         
         return self.get_state()
 
@@ -73,10 +65,13 @@ class Game2048:
         return self.grid.reshape(1, GRID_SIZE * GRID_SIZE), self.calculate_reward(), self.is_game_over()
     
     def calculate_reward(self):
-        reward = self.score
-        if self.same == True:
-            reward -= 256 * self.same_counter
-        return reward
+        self.reward = self.score
+        max = np.max(self.grid)
+        print(max)
+        if max == self.grid[0][0] or max == self.grid[GRID_SIZE - 1][GRID_SIZE - 1] or max == self.grid[0][GRID_SIZE - 1] or max == self.grid[GRID_SIZE - 1][0]:
+            self.reward = 2 * self.reward
+        self.reward = self.reward / 100
+        return self.reward
 
     def is_game_over(self):
         # Check if any empty cells are available

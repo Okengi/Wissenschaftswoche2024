@@ -65,7 +65,7 @@ def train():
     
     for episode in range(NUM_EPISODES):
         game = Game2048()
-        #visuals = Visuals(game, True)
+        # visuals = Visuals(game, True)
         game_board, reward, is_game_over = game.get_state()
         #print(f"game_board: {game_board}\nreward: {reward}\nis_game_over: {is_game_over}")
         random_counter = 0
