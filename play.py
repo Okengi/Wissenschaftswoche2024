@@ -26,9 +26,12 @@ def main():
             action_indexes = np.argsort(actions)[::-1]
             game_board, reward, is_game_over = game.move(action_indexes[0][counter])
             counter += 1
+        # action = np.argmax(actions[0])
+        # print(f"Actions: {actions[0]}\naction: {action}")
+        # game_board, reward, is_game_over = game.move(action)
             
         visuals.move()
-        time.sleep(0.5)
+        time.sleep(0.1)
     visuals.stay()
 
 if __name__ == '__main__':
